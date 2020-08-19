@@ -22,14 +22,6 @@ class Robot {
     //Mecanum, Firing, Terrain
     private DriveMode[] modes = new DriveMode[3];
 
-    //MOTOR POWER
-    /*
-        both motors on the left side will be running at the same power
-        and same with motors on the right side
-     */
-    public double motors_left_power = 0;
-    public double motors_right_power = 0;
-
     //controller input
     private double x;
     private double y;
@@ -87,11 +79,6 @@ class Robot {
     }
 
     public void update() {
-        motor_left_front.setPower(motors_left_power);
-        motor_left_back.setPower(motors_left_power);
-
-        motor_right_front.setPower(motors_right_power);
-        motor_right_back.setPower(motors_right_power);
 
         //set mode
         if (!servosSet) modes[modeIndex].awake(this);
