@@ -5,7 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
 
 /*
-    based off of Kai and Sho's skystone teleOp code
+    Credit to Kai and Sho. This code is based off of their skystone 2019 code
+    Credit to Alnis. The Mecanum code is based off of his skystone code.
 
     //TODO test the code on the robot
 
@@ -31,35 +32,51 @@ public class TeleOpMain extends OpMode {
 
     @Override
     public void loop() {
-        listenForInput();
         controller1.update();
+        listenForInput();
         octoBot.update();
     }
 
     private void listenForInput() {
-
-        //move like ball drive
-        octoBot.motors_left_power  = Range.clip(controller1.left_stick_y + controller1.right_stick_x,-1d,1d);
-        octoBot.motors_right_power = Range.clip(controller1.left_stick_y - controller1.right_stick_x,-1d,1d);
-
         setDriveMode();
+        controlDriveBase();
     }
 
-    private void setDriveMode() {
-        if(controller1.right_bumper) {
+    private void controlDriveBase() {
+        //get inputs from controller
+        double x = controller1.left_stick_x;
+        double y = controller1.left_stick_y;
+        double r = controller1.right_stick_x;
 
-            if(octoBot.modeIndex < 2)
+        octoBot.setMotorPower(x, y, r);
+    }
+
+    /*
+       left/right bumpers set the pointer to point to a mode
+       Mecanum Firing Terrain
+         ^
+         |
+       modeIndex
+
+       for example,
+       hitting the right bumper will set the mode to Firing
+     */
+    private void setDriveMode() {
+        if (controller1.right_bumper) {
+
+            //makes sure the pointer is in the bounds of the modes array
+            if (octoBot.modeIndex < 2)
                 octoBot.modeIndex++;
 
+            //servosSet is used to makes sure that
+            //the we are not setting the position of the servo every time the robot updates
             octoBot.servosSet = false;
-        }
-        else if(controller1.left_bumper) {
+        } else if(controller1.left_bumper) {
 
             if(octoBot.modeIndex > 0)
                 octoBot.modeIndex--;
 
             octoBot.servosSet = false;
         }
-
     }
 }

@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 class Robot {
 
@@ -88,6 +88,17 @@ class Robot {
         motor_right_back.setPower(motors_right_power);
 
         //set mode
-        if(!servosSet) modes[modeIndex].awake(this);
+        if (!servosSet) modes[modeIndex].awake(this);
+    }
+
+    public void setMotorPower(double x, double y, double r) {
+        motor_right_front.setPower(clipToMotorBounds(y - x + r));
+        motor_left_front.setPower(clipToMotorBounds(y + x - r));
+        motor_left_back.setPower(clipToMotorBounds(y - x - r));
+        motor_right_back.setPower(clipToMotorBounds(y + x + r));
+    }
+
+    private double clipToMotorBounds(double power) {
+        return Range.clip(power, -1, 1);
     }
 }
