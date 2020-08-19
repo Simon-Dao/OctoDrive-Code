@@ -3,7 +3,8 @@ package org.firstinspires.ftc.teamcode.teleop;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
+
+import java.util.Arrays;
 
 class Robot {
 
@@ -28,6 +29,11 @@ class Robot {
      */
     public double motors_left_power = 0;
     public double motors_right_power = 0;
+
+    //controller input
+    private double x;
+    private double y;
+    private double r;
 
     //SERVOS
     /*
@@ -92,13 +98,43 @@ class Robot {
     }
 
     public void setMotorPower(double x, double y, double r) {
-        motor_right_front.setPower(clipToMotorBounds(y - x + r));
-        motor_left_front.setPower(clipToMotorBounds(y + x - r));
-        motor_left_back.setPower(clipToMotorBounds(y - x - r));
-        motor_right_back.setPower(clipToMotorBounds(y + x + r));
+        this.x = x;
+        this.y = y;
+        this.r = r;
+
+        double[] power = scalePowers();
+
+        motor_right_front.setPower(power[0]);
+        motor_left_front.setPower(power[1]);
+        motor_left_back.setPower(power[2]);
+        motor_right_back.setPower(power[3]);
     }
 
-    private double clipToMotorBounds(double power) {
-        return Range.clip(power, -1, 1);
+    private double[] scalePowers() {
+
+        double[] inputs =
+                {
+                        y - x + r,
+                        y + x - r,
+                        y - x + r,
+                        y + x + r
+                };
+
+        double max = getMaxMag(inputs);
+
+        if (max > 1) {
+            for (int i = 0; i < inputs.length; i++)
+                inputs[i] *= 1 / max;
+        }
+
+        return inputs;
+    }
+
+    //returns the largest magnitude
+    private double getMaxMag(double[] inputs) {
+
+        Arrays.sort(inputs);
+
+        return inputs[inputs.length - 1];
     }
 }
